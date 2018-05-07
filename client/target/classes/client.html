@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>netty-client</title>
+</head>
+<body>
+<script type="text/javascript">
+    var socket;
+
+    function connectServer() {
+        if (!window.WebSocket) {
+            window.WebSocket = window.MozwWebSocket;
+        }
+        if (window.WebSocket) {
+            socket = new WebSocket("ws://localhost:8080");
+            socket.onmessage = function (ev) {
+                var ta = document.getElementById('responseText');
+                ta.value = ta.value + '\n' + ev.data;
+            };
+            socket.onopen = function (ev) {
+                var ta = document.getElementById('responseText');
+                ta.value = ta.value + "连接开启！";
+            };
+            socket.onclose = function (ev) {
+                var ta = document.getElementById('responseText');
+                ta.value = ta.value + "连接被关闭";
+            };
+        } else {
+            alert("你的浏览器不支持websocket!");
+        }
+
+    }
+
+    function send(message) {
+        if (!window.WebSocket) {
+            return;
+        }
+        if (socket.readyState == WebSocket.OPEN) {
+            socket.send(message);
+        } else {
+            alert("连接未开启");
+        }
+    }
+</script>
+<form onsubmit="return false;">
+    <input type="button" onclick="javascript:connectServer()" value="连接服务器">
+    <h3>netty客户端</h3>
+    <textarea id="responseText" style="width: 500px;height: 300px"></textarea>
+    <br>
+    <input type="text" name="message" style="width: 300px" value="聊天文字在这里...">
+    <input type="button" value="发送消息" onclick="send(this.form.message.value)">
+    <input type="button" onclick="javascript:document.getElementById('responseText').value=''" value="清空聊天记录">
+</form>
+<br>
+<br>
+</body>
+</html>
